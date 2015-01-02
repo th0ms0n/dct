@@ -6,7 +6,7 @@
 /**********************************
 * read wav file
 **********************************/
-ulong readSoundFile(const char *path, double *buf, uint samples)
+uint readSoundFile(const char *path, double *buf, uint samples)
 {
     /* open sound file */
     SNDFILE *file = NULL;
@@ -26,10 +26,7 @@ ulong readSoundFile(const char *path, double *buf, uint samples)
     {      
         /* read data */
         items_read = sf_read_double(file, buf, samples);
-        if (items_read != samples)
-        {
-            fprintf(stderr, "%s: only %d samples out of requested %d samples imported.\n", __FUNCTION__, items_read, samples);    
-        }
+        fprintf(stderr, "%s: got %u samples.\n", __FUNCTION__, items_read);          
     }
     else
     {

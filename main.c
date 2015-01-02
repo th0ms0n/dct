@@ -4,34 +4,17 @@
 #include "dct.h"
 #include "snd.h"
 
+#define SAMPLES 100000u
 
 int main(int argc, char **argv)
 {
-    double samples[] = {2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    uint i, N = sizeof(samples) / sizeof(double);
+    double data[SAMPLES],
+           spec[SAMPLES];
+    uint N;
     
-    double *out = malloc(sizeof(samples));
+    N = readSoundFile("busy.wav", data, SAMPLES);
+    dct(data, spec, N);
+    dumpSignal(spec, 100u);
     
-    dct(samples, out, N);    
-    for (i = 0; i < N; ++i)
-    {
-        printf("%f\n", out[i]);    
-    }    
-    
-    printf("*** back ***\n");
-    idct(out, samples, N);
-    for (i = 0; i < N; ++i)
-    {
-        printf("%f\n", samples[i]);    
-    }    
-    
-    printf("*** normalized ***\n");
-    normalize(out, N);
-    for (i = 0; i < N; ++i)
-    {
-        printf("%f\n", out[i]);    
-    }    
-    
-    free(out); 
     return EXIT_SUCCESS;
 }

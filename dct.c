@@ -8,7 +8,9 @@
 void dct(double *in, double *out, uint samples)
 {
     uint i, k;
-    double sum, coeff = DCT_PI / samples;    
+    double sum, coeff = DCT_PI / samples; 
+    
+    #pragma omp parallel for   
     for (i = 0; i < samples; ++i)
     {
         sum = 0.0;        
@@ -30,6 +32,8 @@ void idct(double *in, double *out, uint samples)
     double sum, coeff = DCT_PI / samples,
            init = 0.5 * in[0],
            scale = 2.0 / samples; 
+           
+    #pragma omp parallel for
     for (i = 0; i < samples; ++i)
     {
         sum = init;        
@@ -45,7 +49,7 @@ void idct(double *in, double *out, uint samples)
 /**********************************
 * normalize spectrum
 **********************************/
-void normalize(double *data, uint samples)
+void normalizeSignal(double *data, uint samples)
 {
     uint i;
     double sum = 0.0;
@@ -57,4 +61,18 @@ void normalize(double *data, uint samples)
     {
         data[i] /= sum; 
     }
+}
+
+
+/**********************************
+* dump signal
+**********************************/
+void dumpSignal(double *data, uint samples)
+{
+    uint i;
+    for (i = 0; i < samples; ++i)
+    {
+        fprintf(stdout, "%.2f ", data[i]);
+    }
+    fprintf(stdout, "\n");
 }

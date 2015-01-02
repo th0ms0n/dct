@@ -9,7 +9,7 @@
 /**********************************
 * prototypes
 **********************************/
-ulong readSoundFile(const char *path, double *buf, uint samples);
+uint readSoundFile(const char *path, double *buf, uint samples);
 
 
 #endif

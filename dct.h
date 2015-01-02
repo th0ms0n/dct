@@ -16,7 +16,8 @@
 **********************************/
 void dct(double *in, double *out, uint samples);
 void idct(double *in, double *out, uint samples);
-void normalize(double *data, uint samples);
+void normalizeSignal(double *data, uint samples);
+void dumpSignal(double *data, uint samples);
 
 
 #endif
