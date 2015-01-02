@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dct.h"
+#include "snd.h"
 
 
 int main(int argc, char **argv)
