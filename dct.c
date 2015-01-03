@@ -111,11 +111,9 @@ void maximumSpectrum(double *data, uint samples, double *out, uint window_size, 
     for (i = 0; i < limit; i += step_size)
     {
         dct(&data[i], tmp, window_size);
-        absSignal(tmp, window_size);
-        
         for (k = 0; k < window_size; ++k)
         {
-            if (tmp[k] > out[k])
+            if (fabs(tmp[k]) > fabs(out[k]))
             {
                 out[k] = tmp[k];
             }
@@ -131,10 +129,12 @@ void maximumSpectrum(double *data, uint samples, double *out, uint window_size, 
 void nonMaximumSuppression(double *in, double *out, uint samples)
 {
     uint i, limit = samples - 1u;
+    double fabsi;
     memset(out, 0, samples * sizeof(double));
     for (i = 1u; i < limit; ++i)
     {
-        if (in[i] > in[i - 1u] && in[i] > in[i + 1u])
+        fabsi = fabs(in[i]);
+        if (fabsi > fabs(in[i - 1u]) && fabsi > fabs(in[i + 1u]))
         {
             out[i] = in[i];
         }
@@ -192,5 +192,18 @@ void shiftSignal(double *in, double *out, uint samples, int shift)
         is = i + shift;
         if (is < 0 || is >= samples) continue;
         out[i] = in[is];   
+    }
+}
+
+
+/**********************************
+* diff signals
+**********************************/
+void diffSignal(double *sig1, double *sig2, double *out, uint samples)
+{
+    uint i;   
+    for (i = 0; i < samples; ++i)
+    {
+        out[i] = sig2[i] - sig1[i];    
     }
 }

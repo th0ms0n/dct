@@ -10,31 +10,32 @@
 
 int main(int argc, char **argv)
 {
-    double data[SAMPLES],
-           spec1[WINDOW],
-           spec2[WINDOW],
-           shifted[WINDOW];
+    double data[SAMPLES],           
+           spec1[SAMPLES],
+           nmax1[SAMPLES],
+           spec2[SAMPLES],
+           nmax2[SAMPLES],
+           diff[SAMPLES],
+           out[SAMPLES];              
     uint k, N;
     FILE *f = NULL;
-    int shift;
+       
+    N = readSoundFile("busy.wav", data, SAMPLES);    
+    maximumSpectrum(data, N, spec1, WINDOW, STEP);
+    nonMaximumSuppression(spec1, nmax1, WINDOW);
     
-    N = readSoundFile("car.wav", data, SAMPLES);
-    maximumSpectrum(data, N, spec1, WINDOW, STEP);       
-    
-    N = readSoundFile("carpitch.wav", data, SAMPLES);
+    N = readSoundFile("busytick.wav", data, SAMPLES);    
     maximumSpectrum(data, N, spec2, WINDOW, STEP);
+    nonMaximumSuppression(spec2, nmax2, WINDOW);
     
-    printf("shift: %i\n", shift = bestShift(spec1, spec2, WINDOW));
-    shiftSignal(spec2, shifted, WINDOW, shift);
-    
-    printf("shift: %i\n", bestShift(spec1, shifted, WINDOW));
-    
-    
-    
-    f = fopen("carpitch.txt", "w");
+    diffSignal(spec1, spec2, diff, WINDOW);
+    idct(diff, out, WINDOW);
+    writeSoundFile("out.wav", out, WINDOW, 8000, 10);
+     
+    f = fopen("diff.txt", "w");
     for (k = 0; k < WINDOW; ++k)
-    {        
-        fprintf(f, "%f\n", shifted[k]);    
+    {              
+        fprintf(f, "%f\n", diff[k]);    
     }    
     fclose(f);
     
