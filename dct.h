@@ -25,4 +25,5 @@ int  bestShift(double *sig1, double *sig2, uint samples);
 void shiftSignal(double *in, double *out, uint samples, int shift);
 void diffSignal(double *sig1, double *sig2, double *out, uint samples);
 
+
 #endif

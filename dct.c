@@ -6,7 +6,7 @@
 
 /**********************************
 * discrete cosine transform
-****************void shiftSignal(double *in, double *out, uint samples, int shift);******************/
+**********************************/
 void dct(double *in, double *out, uint samples)
 {
     uint i, k;
@@ -111,9 +111,11 @@ void maximumSpectrum(double *data, uint samples, double *out, uint window_size, 
     for (i = 0; i < limit; i += step_size)
     {
         dct(&data[i], tmp, window_size);
+        absSignal(tmp, window_size);
+        
         for (k = 0; k < window_size; ++k)
         {
-            if (fabs(tmp[k]) > fabs(out[k]))
+            if (tmp[k] > out[k])
             {
                 out[k] = tmp[k];
             }
@@ -128,13 +130,11 @@ void maximumSpectrum(double *data, uint samples, double *out, uint window_size, 
 **********************************/
 void nonMaximumSuppression(double *in, double *out, uint samples)
 {
-    uint i, limit = samples - 1u;
-    double fabsi;
+    uint i, limit = samples - 1u;    
     memset(out, 0, samples * sizeof(double));
     for (i = 1u; i < limit; ++i)
-    {
-        fabsi = fabs(in[i]);
-        if (fabsi > fabs(in[i - 1u]) && fabsi > fabs(in[i + 1u]))
+    {       
+        if (in[i] > in[i - 1u] && in[i] > in[i + 1u])
         {
             out[i] = in[i];
         }
@@ -204,6 +204,6 @@ void diffSignal(double *sig1, double *sig2, double *out, uint samples)
     uint i;   
     for (i = 0; i < samples; ++i)
     {
-        out[i] = sig2[i] - sig1[i];    
+        out[i] = fabs(sig2[i] - sig1[i]);    
     }
 }
