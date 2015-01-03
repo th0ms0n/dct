@@ -16,13 +16,14 @@ int main(int argc, char **argv)
     uint k, N;
     FILE *f = NULL;  
     
-    N = readSoundFile("busy2.wav", data, SAMPLES);
+    N = readSoundFile("car3.wav", data, SAMPLES);
     maximumSpectrum(data, N, spec, WINDOW, STEP);
     nonMaximumSuppression(spec, nmax, WINDOW);    
     
-    f = fopen("freq.txt", "w");
+    f = fopen("car3.txt", "w");
     for (k = 0; k < WINDOW; ++k)
     {
+        if (nmax[k] == 0.0) continue;
         fprintf(f, "%f\n", nmax[k]);    
     }    
     fclose(f);
