@@ -1,17 +1,18 @@
 #include "dct.h"
 #include <math.h>
 #include <string.h>
+#include <float.h>
 
 
 /**********************************
 * discrete cosine transform
-**********************************/
+****************void shiftSignal(double *in, double *out, uint samples, int shift);******************/
 void dct(double *in, double *out, uint samples)
 {
     uint i, k;
     double sum, coeff = DCT_PI / samples; 
     
-    #pragma omp parallel for   
+    #pragma omp parallel for
     for (i = 0; i < samples; ++i)
     {
         sum = 0.0;        
@@ -85,7 +86,7 @@ void dumpSignal(double *data, uint samples)
 void absSignal(double *data, uint samples)
 {
     uint i;
-    #pragma omp parallel for
+    
     for (i = 0; i < samples; ++i)
     {
         if (data[i] < 0.0)
@@ -131,12 +132,65 @@ void nonMaximumSuppression(double *in, double *out, uint samples)
 {
     uint i, limit = samples - 1u;
     memset(out, 0, samples * sizeof(double));
-    #pragma omp parallel for
     for (i = 1u; i < limit; ++i)
     {
         if (in[i] > in[i - 1u] && in[i] > in[i + 1u])
         {
             out[i] = in[i];
         }
+    }
+}
+
+
+/**********************************
+* how to shift second signal
+* for best correlation
+**********************************/
+int bestShift(double *sig1, double *sig2, uint samples)
+{
+    int mins = -0.5 * samples + 1,
+        maxs =  0.5 * samples - 1,
+        s, i, cnt, is, shift = 0;
+    double sum, best;
+    
+    best = -DBL_MAX;
+    for (s = mins; s <= maxs; ++s)
+    {
+        /* compute correlation */
+        sum = 0.0;
+        cnt = 0;
+        for (i = 0; i < samples; ++i)
+        {
+            is = i + s;
+            if (is < 0 || is >= samples) continue;           
+            sum += sig1[i] * sig2[is];
+            ++cnt;
+        }
+        sum /= cnt;        
+        
+        /* find highest sum */
+        if (sum > best)
+        {
+            best = sum;
+            shift = s;            
+        }     
+    }
+    
+    return shift;
+}
+
+
+/**********************************
+* shift signal
+**********************************/
+void shiftSignal(double *in, double *out, uint samples, int shift)
+{
+    uint i, is;
+    memset(out, 0, samples * sizeof(double));
+    for (i = 0; i < samples; ++i)
+    {
+        is = i + shift;
+        if (is < 0 || is >= samples) continue;
+        out[i] = in[is];   
     }
 }
